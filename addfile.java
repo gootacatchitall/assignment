@@ -43,12 +43,13 @@ public class addfile extends javax.swing.JFrame {
      */
     public addfile() {
         initComponents();
-        list = new ArrayList();
-        openlist();
+       
+      //  openlist();
     }
 
     public void openlist() {
        File ng = new File("C:\\Users\\Administrator\\Documents\\NetBeansProjects\\not-git\\console.dat");
+        list = new ArrayList();
       //  StringBuilder sb = new StringBuilder();
         if (ng.exists()) {
         try {

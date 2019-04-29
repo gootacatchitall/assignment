@@ -10,8 +10,10 @@ import java.io.EOFException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -42,6 +44,7 @@ public class menu extends javax.swing.JFrame {
     private JButton commit;
     private JButton log;
     addfile open;
+
     /**
      * Creates new form menu
      */
@@ -134,12 +137,11 @@ public class menu extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void addActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addActionPerformed
-       // printtrack=0;
-        
-         
+        // printtrack=0;
+
         open.setVisible(true);
-        
-      /* File ng = new File("C:\\Users\\Administrator\\Documents\\NetBeansProjects\\not-git\\console.dat");
+
+        /* File ng = new File("C:\\Users\\Administrator\\Documents\\NetBeansProjects\\not-git\\console.dat");
         ng.delete();
         open.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -163,51 +165,76 @@ public class menu extends javax.swing.JFrame {
     }//GEN-LAST:event_addActionPerformed
 
     private void commitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_commitActionPerformed
-      checkexist();
-        
+        checkexist();
+
     }//GEN-LAST:event_commitActionPerformed
 
-    public boolean checkexist(){
-        String paths="C:\\Users\\Administrator\\Documents\\Not-git\\";
-        String source="C:\\Users\\Administrator\\Documents\\Not-git\\";
-        
+    public void checkexist() {
+        String paths = "C:\\Users\\Administrator\\Documents\\Not-git\\";
+        String source = "C:\\Users\\Administrator\\Documents\\Not-git\\";
+
         try {
-            ObjectInputStream obs=new ObjectInputStream(new FileInputStream("console.dat"));
-            try{
-            while(true){
-                source="C:\\Users\\Administrator\\Documents\\";
-                paths="C:\\Users\\Administrator\\Documents\\Not-git\\";
-               Scanner s=new Scanner(obs.readUTF());
-               String check=s.next();
-               for(int i=0;i<check.length();i++){
-               if(check.charAt(i)=='.')
-                   break;
-               source+=check.charAt(i);
-               paths+=check.charAt(i);
-               }
-               source+=".txt";
-               Path path=Paths.get(paths);
-               File file=new File(paths);
-               if(!file.exists()){
-                   Path sourcepath=Paths.get(source);
-                Files.createDirectory(path);
-                //Files.copy(path,sourcepath);
-                
-               }
-               else{
-                   
-               }
-            }
+            ObjectInputStream obs = new ObjectInputStream(new FileInputStream("console.dat"));
+            try {
+                while (true) {
+                    source = "C:\\Users\\Administrator\\Documents\\Not-git\\";
+                    paths = "C:\\Users\\Administrator\\Documents\\Not-git\\";
+                    Scanner s = new Scanner(obs.readUTF());
+                    String check = s.nextLine();String temp="";
+                    for (int i = 0; i < check.length(); i++) {
+                        if (check.charAt(i) == '.') {
+                            break;
+                        }
+                        temp+=check.charAt(i);                       
+                    }
+                    source += temp+".txt";
+                    paths += temp;
+                    Path path = Paths.get(paths);
+                    File file = new File(paths);
+                     Path sourcepath = Paths.get(source);
+                    if (!file.exists()) {
+                       
+                        Files.createDirectory(path);
+                        copyfile(sourcepath,path,temp);
+                    
+                    } else {
+                         copyfile(sourcepath,path,temp);
+                    }
                 }
-            catch(EOFException e){}
+            } catch (EOFException e) {
+            }
             obs.close();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(addfile.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(addfile.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return 
+
     }
+    
+    public void copyfile(Path sour,Path dest,String check) throws FileNotFoundException{
+        File file=new File(sour.toString());
+        Scanner s=new Scanner(new FileInputStream(file));
+        try {
+            ObjectOutputStream obs=new ObjectOutputStream(new FileOutputStream(dest.toString()+"\\"+check+checkversion(dest.toString())+".dat"));
+            while(s.hasNextLine()){
+                obs.writeUTF(s.nextLine());
+            }
+           obs.close();
+        } catch (IOException ex) {
+            Logger.getLogger(menu.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }
+        public String checkversion(String ver){
+            File fil=new File(ver);
+            int v=1;
+            File[] fi = fil.listFiles();
+            v+=fi.length;
+            System.out.println(v);
+            return " version "+(Integer.toString(v));
+        }
+        
     //</editor-fold>
 
     /* Create and display the form */
