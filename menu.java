@@ -144,8 +144,7 @@ public class menu extends javax.swing.JFrame {
                         .addGap(44, 44, 44)
                         .addComponent(revert)
                         .addGap(47, 47, 47)
-                        .addComponent(log)))
-                .addContainerGap(60, Short.MAX_VALUE))
+            
         );
 
         pack();
