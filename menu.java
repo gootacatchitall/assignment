@@ -14,12 +14,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.Paths;
 import static java.nio.file.StandardCopyOption.COPY_ATTRIBUTES;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -27,15 +29,17 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+import static not.git.NotGit.fileFound;
 import static not.git.NotGit.fileName;
 import static not.git.addfile.printtrack;
 
 /**
  *
- * @author Administrator
+ * @author USER
  */
 public class menu extends javax.swing.JFrame {
 
+    ArrayList list;
     private Button add;
     private JButton status;
     private JButton revert;
@@ -74,6 +78,7 @@ public class menu extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Menu");
 
+        add.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         add.setLabel("add");
         add.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -82,8 +87,18 @@ public class menu extends javax.swing.JFrame {
         });
 
         status.setText("status");
+        status.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                statusActionPerformed(evt);
+            }
+        });
 
         revert.setText("revert");
+        revert.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                revertActionPerformed(evt);
+            }
+        });
 
         log.setText("log");
 
@@ -141,7 +156,7 @@ public class menu extends javax.swing.JFrame {
 
         open.setVisible(true);
 
-        /* File ng = new File("C:\\Users\\Administrator\\Documents\\NetBeansProjects\\not-git\\console.dat");
+        /* File ng = new File("C:\\Users\\USER\\Documents\\NetBeansProjects\\not-git\\console.dat");
         ng.delete();
         open.addWindowListener(new java.awt.event.WindowAdapter() {
             @Override
@@ -169,36 +184,123 @@ public class menu extends javax.swing.JFrame {
 
     }//GEN-LAST:event_commitActionPerformed
 
+    private void statusActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_statusActionPerformed
+        openlist();
+        ArrayList newfile = new ArrayList();
+        ArrayList modfile = new ArrayList();
+        ArrayList untfile = new ArrayList();
+        if (list.size() == 0) {
+            window.append("status:\nno file is being tracked");
+        } else {
+            window.append("status:\n");
+            int printnew=0,printmod=0,printunt=0;
+            for (int i = 0; i < list.size(); i++) {
+                String source = "C:\\Users\\USER\\Documents\\Not-git\\";
+                //paths destination folder
+                String paths = "C:\\Users\\USER\\Documents\\Not-git\\";
+                String temp = (String) list.get(i);
+                for (int j = 0; j < temp.length(); j++) {
+                    if (temp.charAt(j) == '.') {
+                        break;
+                    }
+                    source += temp.charAt(j);
+                    paths += temp.charAt(j);
+                }
+                source += ".txt";
+                //paths==folder
+                //source==file.txt
+                File fil = new File(paths);
+                File sorfil=new File(source);
+                //these command makes string into file type
+                //if folder.directory not exist
+                if (!fil.exists()) {
+                    newfile.add(list.get(i));
+                    printnew++;
+                }else{
+                Path path = Paths.get(paths);
+                Path sourcepath = Paths.get(source);
+                if (checkoverlap(sourcepath, path)) {
+                    modfile.add(list.get(i));
+                    printmod++;
+                }
+                }
+                if(!sorfil.exists()){
+                    modfile.remove(list.get(i));
+                    printmod--;
+                    untfile.add(list.get(i));
+                    printunt++;
+                }
+            }
+            if(printnew==0&&printmod==0&&printunt==0)
+                window.append("nothing has changed\n");
+            if(printnew>0){
+        window.append("new files:\n");
+        for (int i = 0; i < newfile.size(); i++) {
+            window.append(newfile.get(i) + "\n");
+        }
+            }
+        if(printmod>0){
+        window.append("modified files:\n");
+        for (int i = 0; i < modfile.size(); i++) {
+            window.append(modfile.get(i) + "\n");
+        }
+        }
+        if(printunt>0){
+        window.append("untracked files:\n");
+        for (int i = 0; i < untfile.size(); i++) {
+            window.append(untfile.get(i) + "\n");
+        }
+        }
+        }
+        window.append("\n");
+    }//GEN-LAST:event_statusActionPerformed
+
+    private void revertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_revertActionPerformed
+        new revertfile().setVisible(true);
+        
+    }//GEN-LAST:event_revertActionPerformed
+
     public void checkexist() {
-        String paths = "C:\\Users\\Administrator\\Documents\\Not-git\\";
-        String source = "C:\\Users\\Administrator\\Documents\\Not-git\\";
+        String paths = "C:\\Users\\USER\\Documents\\Not-git\\";
+        String source = "C:\\Users\\USER\\Documents\\Not-git\\";
 
         try {
             ObjectInputStream obs = new ObjectInputStream(new FileInputStream("console.dat"));
             try {
                 while (true) {
-                    source = "C:\\Users\\Administrator\\Documents\\Not-git\\";
-                    paths = "C:\\Users\\Administrator\\Documents\\Not-git\\";
+                    source = "C:\\Users\\USER\\Documents\\Not-git\\";
+                    paths = "C:\\Users\\USER\\Documents\\Not-git\\";
                     Scanner s = new Scanner(obs.readUTF());
-                    String check = s.nextLine();String temp="";
+                    String check = s.nextLine();
+                    String temp = "";
                     for (int i = 0; i < check.length(); i++) {
                         if (check.charAt(i) == '.') {
                             break;
                         }
-                        temp+=check.charAt(i);                       
+                        temp += check.charAt(i);
                     }
-                    source += temp+".txt";
+                    source += temp + ".txt";
                     paths += temp;
                     Path path = Paths.get(paths);
                     File file = new File(paths);
-                     Path sourcepath = Paths.get(source);
+                    Path sourcepath = Paths.get(source);
+                    File sourcefile=new File(source);
                     if (!file.exists()) {
-                       
+
                         Files.createDirectory(path);
-                        copyfile(sourcepath,path,temp);
-                    
-                    } else {
-                         copyfile(sourcepath,path,temp);
+                        //   if(checkoverlap(sourcepath,path))
+                        copyfile(sourcepath, path, temp);
+                        //  else
+                        //    JOptionPane.showMessageDialog(null,temp +" has been committed");
+
+                    }else if(file.exists()&&!sourcefile.exists())
+                        ;
+                    else {
+                        if (checkoverlap(sourcepath, path)) {
+                            copyfile(sourcepath, path, temp);
+                        } else {
+                            JOptionPane.showMessageDialog(null, temp + " is already committed");
+                        }
                     }
                 }
             } catch (EOFException e) {
@@ -211,30 +313,71 @@ public class menu extends javax.swing.JFrame {
         }
 
     }
-    
-    public void copyfile(Path sour,Path dest,String check) throws FileNotFoundException{
-        File file=new File(sour.toString());
-        Scanner s=new Scanner(new FileInputStream(file));
+
+    public void copyfile(Path sour, Path dest, String check) throws FileNotFoundException {
+        File file = new File(sour.toString());
+        File v=new File(dest.toString());
+        File []vv=v.listFiles();
+        Scanner s = new Scanner(new FileInputStream(file));
         try {
-            ObjectOutputStream obs=new ObjectOutputStream(new FileOutputStream(dest.toString()+"\\"+check+checkversion(dest.toString())+".dat"));
-            while(s.hasNextLine()){
-                obs.writeUTF(s.nextLine());
+            PrintWriter obs = new PrintWriter(new FileOutputStream(dest.toString() + "\\" + check + checkversion(dest.toString()) + ".txt"));
+            while (s.hasNextLine()) {
+                obs.println(s.nextLine());
             }
-           obs.close();
+            window.append(check+" commited with id "+(vv.length+1)+"\n");
+            obs.close();
         } catch (IOException ex) {
             Logger.getLogger(menu.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
-        public String checkversion(String ver){
-            File fil=new File(ver);
-            int v=1;
-            File[] fi = fil.listFiles();
-            v+=fi.length;
-            System.out.println(v);
-            return " version "+(Integer.toString(v));
+
+    public String checkversion(String ver) {
+        File fil = new File(ver);
+        int v = 1;
+        File[] fi = fil.listFiles();
+        v += fi.length;
+        return " version " + (Integer.toString(v));
+    }
+
+    public boolean checkoverlap(Path sour, Path des) {
+        File file = new File(sour.toString());
+        File fil2 = new File(des.toString());
+        File[] fi = fil2.listFiles();
+        for (int i = 0; i < fi.length; i++) {
+            fil2 = fi[i];
         }
-        
+        if (file.length() == fil2.length()) {
+            return false;
+        }
+
+        return true;
+    }
+//each add ,commit and status button
+    public void openlist() {
+        File ng = new File("C:\\Users\\USER\\Documents\\NetBeansProjects\\not-git\\console.dat");
+        list = new ArrayList();
+        //  StringBuilder sb = new StringBuilder();
+        if (ng.exists()) {
+            try {
+                ObjectInputStream obs = new ObjectInputStream(new FileInputStream("console.dat"));
+                try {
+                    while (true) {
+                        Scanner s = new Scanner(obs.readUTF());
+                        String check = s.next();
+                        list.add(check);
+
+                    }
+                } catch (EOFException e) {
+                }
+                obs.close();
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(addfile.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(addfile.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
     //</editor-fold>
 
     /* Create and display the form */
