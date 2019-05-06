@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 package not.git;
-
+jhi
 import java.awt.Window;
 import java.io.EOFException;
 import java.io.File;
